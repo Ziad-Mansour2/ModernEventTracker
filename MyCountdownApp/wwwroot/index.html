@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Countdown & Tracker</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
+            --glass-bg: rgba(30, 30, 30, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --accent: #0a84ff;
+            --warning: #ff9f0a;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            background: var(--bg-gradient);
+        }
+
+        .ios-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+        }
+
+        .app-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .view-section {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .glass-panel {
+            padding: 2.5rem;
+            border-radius: 24px;
+            text-align: center;
+            width: 100%;
+        }
+
+        h2 {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 2rem;
+            color: var(--text-main);
+            font-size: 1.5rem;
+        }
+
+        input {
+            background: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+        }
+
+            input:focus {
+                background: rgba(255,255,255,0.1);
+                border-color: var(--accent);
+            }
+
+            input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+                opacity: 0.6;
+                cursor: pointer;
+            }
+
+        .main-btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            width: 100%;
+        }
+
+            .main-btn:active {
+                transform: scale(0.96);
+            }
+
+        .countdown-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 85px;
+            padding: 15px 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+        }
+
+        .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+
+        .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div id="view-countdown" class="view-section">
+            <!-- قسم الإعداد -->
+            <div class="glass-panel ios-glass" id="cd-setup">
+                <h2>Set Event Date</h2>
+                <div style="color: #ff3b30; margin-bottom: 10px; min-height: 20px; font-size: 0.9rem;" id="cd-error"></div>
+                <input type="datetime-local" id="date-input">
+                <button class="main-btn" onclick="startCountdown()">Track This Date</button>
+            </div>
+
+            <!-- قسم العداد / العرض -->
+            <div class="glass-panel ios-glass" id="cd-timer" style="display:none;">
+                <h2 id="cd-status" style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">Time Remaining</h2>
+                <div class="countdown-grid">
+                    <div class="time-box" id="box-d"><span class="number" id="d">00</span><span class="label">Days</span></div>
+                    <div class="time-box"><span class="number" id="h">00</span><span class="label">Hours</span></div>
+                    <div class="time-box"><span class="number" id="m">00</span><span class="label">Minutes</span></div>
+                    <div class="time-box"><span class="number" id="s">00</span><span class="label">Seconds</span></div>
+                </div>
+                <button class="main-btn" id="btn-action" style="background: rgba(255,255,255,0.1); color: var(--text-main); margin-top: 40px; border: 1px solid var(--glass-border);" onclick="resetCountdown()">Reset / Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cdInterval;
+        window.onload = function () { checkServerForExistingTimer(); };
+
+        async function checkServerForExistingTimer() {
+            try {
+                const response = await fetch('/api/Countdown/time-left');
+                if (response.ok) {
+                    const data = await response.json();
+                    // هنا التعديل: لازم نتأكد إن isSet بـ true قبل ما نظهر العداد
+                    if (data.isSet) {
+                        document.getElementById('cd-setup').style.display = 'none';
+                        document.getElementById('cd-timer').style.display = 'block';
+                        fetchTimeFromServer();
+                        cdInterval = setInterval(fetchTimeFromServer, 1000);
+                    }
+                }
+            } catch (error) { console.error("Error", error); }
+        }
+
+        async function startCountdown() {
+            const input = document.getElementById('date-input').value;
+            const err = document.getElementById('cd-error');
+            if (!input) { err.innerText = "Please select a date."; return; }
+
+            try {
+                const response = await fetch('/api/Countdown/set-target', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input)
+                });
+                if (response.ok) {
+                    document.getElementById('cd-setup').style.display = 'none';
+                    document.getElementById('cd-timer').style.display = 'block';
+                    document.getElementById('cd-error').innerText = "";
+                    fetchTimeFromServer();
+                    if (cdInterval) clearInterval(cdInterval);
+                    cdInterval = setInterval(fetchTimeFromServer, 1000);
+                } else { err.innerText = "Error saving date."; }
+            } catch (error) { err.innerText = "Connection failed."; }
+        }
+
+        async function fetchTimeFromServer() {
+            try {
+                const response = await fetch('/api/Countdown/time-left');
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (data.isSet) {
+                        // لو التاريخ في الماضي، نغير النص واللون
+                        if (data.isPast) {
+                            document.getElementById('cd-status').innerText = "Time Since Event";
+                            document.getElementById('cd-status').style.color = "#ff9f0a";
+                        } else {
+                            document.getElementById('cd-status').innerText = "Time Remaining";
+                            document.getElementById('cd-status').style.color = "var(--text-muted)";
+                        }
+
+                        document.getElementById('d').innerText = data.days;
+                        document.getElementById('h').innerText = data.hours < 10 ? "0" + data.hours : data.hours;
+                        document.getElementById('m').innerText = data.minutes < 10 ? "0" + data.minutes : data.minutes;
+                        document.getElementById('s').innerText = data.seconds < 10 ? "0" + data.seconds : data.seconds;
+                    }
+                }
+            } catch (error) { console.error("Error", error); }
+        }
+
+        async function resetCountdown() {
+            try { await fetch('/api/Countdown/clear', { method: 'POST' }); } catch (error) { }
+            clearInterval(cdInterval);
+            document.getElementById('cd-setup').style.display = 'block';
+            document.getElementById('cd-timer').style.display = 'none';
+            document.getElementById('cd-error').innerText = "";
+            document.getElementById('cd-status').innerText = "Time Remaining";
+            document.getElementById('cd-status').style.color = "var(--text-muted)";
+        }
+    </script>
+</body>
+</html>
