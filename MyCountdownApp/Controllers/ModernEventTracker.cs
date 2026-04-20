@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyCountdownApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Countdown")]
     [ApiController]
-    public class CountdownController : ControllerBase
+    public class ModernEventTracker : ControllerBase
     {
         private static DateTime? TargetDate = null;
 

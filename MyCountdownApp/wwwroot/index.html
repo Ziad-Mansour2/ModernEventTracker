@@ -172,7 +172,6 @@
 <body>
     <div class="app-wrapper">
         <div id="view-countdown" class="view-section">
-            <!-- قسم الإعداد -->
             <div class="glass-panel ios-glass" id="cd-setup">
                 <h2>Set Event Date</h2>
                 <div style="color: #ff3b30; margin-bottom: 10px; min-height: 20px; font-size: 0.9rem;" id="cd-error"></div>
@@ -180,7 +179,6 @@
                 <button class="main-btn" onclick="startCountdown()">Track This Date</button>
             </div>
 
-            <!-- قسم العداد / العرض -->
             <div class="glass-panel ios-glass" id="cd-timer" style="display:none;">
                 <h2 id="cd-status" style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">Time Remaining</h2>
                 <div class="countdown-grid">
@@ -203,7 +201,6 @@
                 const response = await fetch('/api/Countdown/time-left');
                 if (response.ok) {
                     const data = await response.json();
-                    // هنا التعديل: لازم نتأكد إن isSet بـ true قبل ما نظهر العداد
                     if (data.isSet) {
                         document.getElementById('cd-setup').style.display = 'none';
                         document.getElementById('cd-timer').style.display = 'block';
@@ -241,7 +238,6 @@
                     const data = await response.json();
 
                     if (data.isSet) {
-                        // لو التاريخ في الماضي، نغير النص واللون
                         if (data.isPast) {
                             document.getElementById('cd-status').innerText = "Time Since Event";
                             document.getElementById('cd-status').style.color = "#ff9f0a";
